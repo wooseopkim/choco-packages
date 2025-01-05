@@ -74,7 +74,7 @@ internal class Choco
         src.CopyInto(dest);
 
         var installScriptPath = Path.Join(toolsDirectory, "chocolateyInstall.ps1");
-        var installScriptContent = $@".\install.ps1 -Url '{uri.AbsoluteUri}' -Checksum '{checksum.Value}'";
+        var installScriptContent = $@"powershell .\install.ps1 -Url '{uri.AbsoluteUri}' -Checksum '{checksum.Value}'";
         await Output.WriteAllTextAsync(paths: installScriptPath, contents: installScriptContent);
     }
 }
