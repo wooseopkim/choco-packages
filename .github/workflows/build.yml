@@ -1,0 +1,72 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: ./global.json
+      - run: dotnet restore --locked-mode
+      - run: dotnet format --no-restore --verify-no-changes
+      - run: dotnet build --no-restore --configuration Release
+      - run: dotnet test --no-build
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.output.outputs.matrix }}
+    steps:
+      - run: |
+          cat <<-EOF | jq add -s -c >> tmp.jsonl
+            {"id": "android-commandlinetools"}
+            {"project": "AndroidCommandLineTools/Main"}
+            {"output": "AndroidCommandLineTools/Main/Releases"}
+            {"verify": "where.exe sdkmanager avdmanager adb"}
+          EOF
+      - id: output
+        run: echo "matrix=$(cat tmp.jsonl | jq -s -c)" >> "$GITHUB_OUTPUT"
+  run:
+    needs: [setup, build]
+    runs-on: windows-latest
+    strategy:
+      matrix: ${{ needs.setup.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: ./global.json
+      - run: dotnet run --project "$PROJECT"
+        env:
+          PROJECT: ${{ matrix.project }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.id }}
+          path: ${{ matrix.output }}
+  check:
+    needs: [setup, run]
+    runs-on: windows-latest
+    strategy:
+      matrix: ${{ needs.setup.outputs.matrix }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.id }}
+          path: ./artifact
+
+      - run: choco install "$ID" --source=./artifact -y
+        env:
+          ID: ${{ matrix.id }}
+      - run: ${{ matrix.verify }}
+
+      - run: choco uninstall "$ID" -y
+        env:
+          ID: ${{ matrix.id }}
+      - id: after-uninstallation
+        run: ${{ matrix.verify }}

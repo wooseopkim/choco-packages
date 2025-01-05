@@ -1,0 +1,17 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+indent_size = 4
+indent_style = space
+tab_width = 4
+trim_trailing_whitespace = true
+
+[*.cs]
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2007#when-to-suppress-warnings
+dotnet_diagnostic.CA2007.severity = none
+
+[*.{sln,csproj,yml,yaml,json}]
+indent_size = 2
