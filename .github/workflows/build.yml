@@ -34,7 +34,7 @@ jobs:
         run: echo "matrix=$(cat tmp.jsonl | jq -s -c)" >> "$GITHUB_OUTPUT"
   run:
     needs: [setup, build]
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include: ${{ fromJson(needs.setup.outputs.matrix) }}
