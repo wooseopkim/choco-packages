@@ -1,5 +1,3 @@
-$ErrorActionPreference = 'Stop'
-
 param (
   [Parameter(Mandatory)]
   [ValidateNotNullOrEmpty()]
@@ -8,6 +6,8 @@ param (
   [ValidateNotNullOrEmpty()]
   [string]$Checksum
 )
+
+$ErrorActionPreference = 'Stop'
 
 $toolsDir = "$(Split-Path -Parent $MyInvocation.MyCommand.Definition)"
 
