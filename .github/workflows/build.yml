@@ -87,9 +87,14 @@ jobs:
         with:
           name: ${{ matrix.id }}-nupkg
 
-      - run: choco install "$ID" --source=. -y --failonstderr
+      - uses: actions/cache@v4
+        with:
+          path: .choco-cache
+          key: ${{ matrix.id }}-choco-${{ hashFiles('./*.nupkg') }}
+      - run: choco install "$ID" --source=. -y --failonstderr --cache="$CACHE"
         env:
           ID: ${{ matrix.id }}
+          CACHE: .choco-cache
       - run: ${{ matrix.verify-install }}
 
       - run: choco uninstall "$ID" -y --failonstderr
