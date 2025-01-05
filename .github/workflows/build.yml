@@ -11,7 +11,7 @@ defaults:
     shell: bash
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,8 +39,8 @@ jobs:
           EOF
       - id: output
         run: echo "matrix=$(cat tmp.jsonl | jq -s -c)" >> "$GITHUB_OUTPUT"
-  run:
-    needs: [setup, build]
+  generate:
+    needs: [setup, test]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -57,10 +57,10 @@ jobs:
           PROJECT: ${{ matrix.project }}
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.id }}
+          name: ${{ matrix.id }}-package
           path: ${{ matrix.artifact }}
-  check:
-    needs: [setup, run]
+  package:
+    needs: [setup, generate]
     runs-on: windows-latest
     strategy:
       matrix:
@@ -68,11 +68,24 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.id }}
-          path: ./artifact
-      - run: choco pack "./artifact/$ID.nuspec"
+          name: ${{ matrix.id }}-package
+      - run: choco pack "./$ID.nuspec"
         env:
           ID: ${{ matrix.id }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.id }}-nupkg
+          path: ./*.nupkg
+  check:
+    needs: [setup, package]
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.setup.outputs.matrix) }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.id }}-nupkg
 
       - run: choco install "$ID" --source=. -y --failonstderr
         env:
