@@ -40,7 +40,12 @@ public class ChocoTest
             StringComparison.InvariantCulture
         );
         Assert.Contains(
-            expectedSubstring: $"-Checksum 'checksum'",
+            expectedSubstring: "-Checksum 'checksum'",
+            actualString: installScript,
+            StringComparison.InvariantCulture
+        );
+        Assert.Contains(
+            expectedSubstring: "-Path \"$toolsPath\"",
             actualString: installScript,
             StringComparison.InvariantCulture
         );
