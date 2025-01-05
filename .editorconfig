@@ -13,5 +13,8 @@ trim_trailing_whitespace = true
 # https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2007#when-to-suppress-warnings
 dotnet_diagnostic.CA2007.severity = none
 
+[**/Tests/*Test.cs]
+dotnet_diagnostic.CA1515.severity = none
+
 [*.{sln,csproj,yml,yaml,json}]
 indent_size = 2
