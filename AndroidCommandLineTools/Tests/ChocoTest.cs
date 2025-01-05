@@ -30,7 +30,7 @@ public class ChocoTest
         var dir = output.NewDirectoryInfo();
         var installScript = await File.ReadAllTextAsync(Path.Combine(dir.FullName, "tools", "chocolateyInstall.ps1"));
         Assert.Contains(
-            expectedSubstring: "install.ps1",
+            expectedSubstring: "helpers.ps1",
             actualString: installScript,
             StringComparison.InvariantCulture
         );
