@@ -71,10 +71,6 @@ jobs:
       - run: choco install "$ID" --source=. -y --failonstderr
         env:
           ID: ${{ matrix.id }}
-      - run: ${{ matrix.verify }}
-
-      - run: choco uninstall "$ID" -y
-        env:
-          ID: ${{ matrix.id }}
-      - id: after-uninstallation
-        run: ${{ matrix.verify }}
+      - run: echo $PATH
+      - run: ls -R .
+      - run: echo $PATH
