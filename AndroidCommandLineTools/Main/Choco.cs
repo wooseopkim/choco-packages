@@ -20,7 +20,6 @@ internal class Choco
         var instance = new Choco(input: input, output: output);
         await Task.WhenAll(
             instance.GenerateNuspec(
-                uri: release.Uri,
                 version: release.Version
             ),
             instance.GenerateTools(
@@ -30,7 +29,7 @@ internal class Choco
         );
     }
 
-    private async Task GenerateNuspec(Uri uri, Version version)
+    private async Task GenerateNuspec(Version version)
     {
         var xml = await Input.ReadAllTextAsync("template.nuspec");
         var doc = XDocument.Parse(xml);
