@@ -22,5 +22,5 @@ function Install-AndroidCommandLineTools {
   }
   Install-ChocolateyZipPackage @packageArgs
 
-  Install-ChocolateyEnvironmentVariable -variableName "ANDROID_HOME" -variableValue "$Path" -variableType 'Machine'
+  Install-ChocolateyEnvironmentVariable -variableName 'ANDROID_HOME' -variableValue "$Path" -variableType 'Machine'
 }
