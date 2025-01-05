@@ -33,7 +33,8 @@ internal class Choco
     private async Task GenerateNuspec(Uri uri, Version version)
     {
         var xml = await Input.ReadAllTextAsync("template.nuspec");
-        var root = XDocument.Parse(xml).Root
+        var doc = XDocument.Parse(xml);
+        var root = doc.Root
             ?? throw new XmlException("document root is null");
         var metadata = root.Element(root.GetDefaultNamespace() + "metadata")
             ?? throw new XmlException("metadata is null");
@@ -59,7 +60,7 @@ internal class Choco
 
         Output.NewDirectoryInfo().Create();
         var nuspecPath = $"{packageName}.nuspec";
-        var nuspecContent = root.ToString();
+        var nuspecContent = doc.ToString();
         await Output.WriteAllTextAsync(paths: nuspecPath, contents: nuspecContent);
     }
 
