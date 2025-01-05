@@ -23,7 +23,7 @@ function Install-AndroidCommandLineTools {
   Install-ChocolateyZipPackage @packageArgs
 
   Get-ChildItem -Path "$Path" -File -Filter '*.bat' -Recurse | ForEach-Object {
-    $name = "$($_.Name)"
+    $name = "$($_.BaseName)"
     $path = "$($_.FullName)"
     Install-BinFile -Name "$name" -Path "$path"
   }
