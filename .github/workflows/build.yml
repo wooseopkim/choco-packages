@@ -56,6 +56,9 @@ jobs:
     strategy:
       matrix:
         include: ${{ fromJson(needs.setup.outputs.matrix) }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/download-artifact@v4
         with:
