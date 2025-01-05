@@ -1,5 +1,3 @@
-using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -7,10 +5,6 @@ namespace AndroidCommandLineTools.Main;
 
 internal class Choco
 {
-
-    private const string ToolsDirectory = "tools";
-
-    private const string InstallScriptName = "chocolateyInstall.ps1";
 
     private readonly ReadOnlyProjectDirectory Input;
     private readonly WriteOnlyProjectDirectory Output;
@@ -44,15 +38,16 @@ internal class Choco
         var metadata = root.Element(root.GetDefaultNamespace() + "metadata")
             ?? throw new XmlException("metadata is null");
 
-        var packageName = Regex.Replace(Project.Name, @"\.Main$", "");
+        var packageName = "android-commandlinetools";
         var map = new Dictionary<string, string>()
         {
-            ["id"] = packageName.ToLower(CultureInfo.CurrentCulture),
+            ["id"] = packageName,
             ["version"] = version.Value,
             ["packageSourceUrl"] = "https://github.com/wooseopkim/choco-packages",
             ["owners"] = "wooseopkim",
-            ["title"] = packageName,
-            ["projectUrl"] = "https://cs.android.com/android-studio/platform/tools/base",
+            ["title"] = "Android Command-Line Tools",
+            ["projectUrl"] = "https://developer.android.com/studio#command-line-tools-only",
+            ["projectSourceUrl"] = "https://cs.android.com/android-studio/platform/tools/base",
             ["authors"] = "Google",
             ["description"] = "Android SDK Command-Line Tools",
             ["iconUrl"] = "https://developer.android.com/static/images/brand/android-head_flat.png",
@@ -70,11 +65,13 @@ internal class Choco
 
     private async Task GenerateTools(Uri uri, Checksum checksum)
     {
-        var src = Input.NewDirectoryInfo(ToolsDirectory);
-        var dest = Output.NewDirectoryInfo(ToolsDirectory);
+        var toolsDirectory = "tools";
+
+        var src = Input.NewDirectoryInfo(toolsDirectory);
+        var dest = Output.NewDirectoryInfo(toolsDirectory);
         src.CopyInto(dest);
 
-        var installScriptPath = Path.Join(ToolsDirectory, InstallScriptName);
+        var installScriptPath = Path.Join(toolsDirectory, "chocolateyInstall.ps1");
         var installScriptContent = $@".\install.ps1 -Url '{uri.AbsoluteUri}' -Checksum '{checksum.Value}'";
         await Output.WriteAllTextAsync(paths: installScriptPath, contents: installScriptContent);
     }

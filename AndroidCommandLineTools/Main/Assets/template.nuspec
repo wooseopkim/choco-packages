@@ -9,6 +9,7 @@
     <title><!-- package name --></title>
     <authors><!-- their names --></authors>
     <projectUrl><!-- their URL --></projectUrl>
+    <projectSourceUrl><!-- their URL --></projectUrl>
     <iconUrl></iconUrl>
     <tags></tags>
     <summary></summary>
