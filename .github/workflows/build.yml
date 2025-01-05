@@ -30,7 +30,8 @@ jobs:
             {"id": "android-commandlinetools"}
             {"project": "AndroidCommandLineTools/Main"}
             {"artifact": "AndroidCommandLineTools/Main/Releases"}
-            {"verify": "where.exe sdkmanager avdmanager"}
+            {"verify-install": "where.exe sdkmanager && where.exe avdmanager"}
+            {"verify-uninstall": "where.exe sdkmanager && exit 1 || exit 0"}
           EOF
       - id: output
         run: echo "matrix=$(cat tmp.jsonl | jq -s -c)" >> "$GITHUB_OUTPUT"
@@ -75,4 +76,9 @@ jobs:
       - run: choco install "$ID" --source=. -y --failonstderr
         env:
           ID: ${{ matrix.id }}
-      - run: ${{ matrix.verify }}
+      - run: ${{ matrix.verify-install }}
+
+      - run: choco uninstall "$ID" -y --failonstderr
+        env:
+          ID: ${{ matrix.id }}
+      - run: ${{ matrix.verify-uninstall }}
