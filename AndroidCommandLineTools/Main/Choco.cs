@@ -48,6 +48,7 @@ internal class Choco
             ["owners"] = "wooseopkim",
             ["title"] = "Android Command-Line Tools",
             ["projectUrl"] = "https://developer.android.com/studio#command-line-tools-only",
+            ["docsUrl"] = "https://developer.android.com/tools",
             ["projectSourceUrl"] = "https://cs.android.com/android-studio/platform/tools/base",
             ["authors"] = "Google",
             ["description"] = "Android SDK Command-Line Tools",
