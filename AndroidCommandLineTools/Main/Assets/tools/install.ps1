@@ -6,7 +6,7 @@ param (
   [string]$Url,
   [Parameter(Mandatory)]
   [ValidateNotNullOrEmpty()]
-  [string]$Checksum,
+  [string]$Checksum
 )
 
 $toolsDir = "$(Split-Path -Parent $MyInvocation.MyCommand.Definition)"
