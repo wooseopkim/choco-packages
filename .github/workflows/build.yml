@@ -64,9 +64,11 @@ jobs:
         with:
           name: ${{ matrix.id }}
           path: ./artifact
-      - run: ls -R ./artifact
+      - run: choco pack "./artifact/$ID.nuspec"
+        env:
+          ID: ${{ matrix.id }}
 
-      - run: choco install "$ID" --source=./artifact -y
+      - run: choco install "$ID" --source=. -y
         env:
           ID: ${{ matrix.id }}
       - run: ${{ matrix.verify }}
