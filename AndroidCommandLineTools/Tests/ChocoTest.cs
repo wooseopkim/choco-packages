@@ -35,17 +35,17 @@ public class ChocoTest
             StringComparison.InvariantCulture
         );
         Assert.Contains(
-            expectedSubstring: $"-Url 'https://example.com/v1/download'",
+            expectedSubstring: $"Url = 'https://example.com/v1/download'",
             actualString: installScript,
             StringComparison.InvariantCulture
         );
         Assert.Contains(
-            expectedSubstring: "-Checksum 'checksum'",
+            expectedSubstring: "Checksum = 'checksum'",
             actualString: installScript,
             StringComparison.InvariantCulture
         );
         Assert.Contains(
-            expectedSubstring: "-Path \"$toolsPath\"",
+            expectedSubstring: "Path = \"$toolsPath\"",
             actualString: installScript,
             StringComparison.InvariantCulture
         );

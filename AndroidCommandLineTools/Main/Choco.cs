@@ -83,11 +83,14 @@ internal class Choco
             ["Url"] = $"'{uri.AbsoluteUri}'",
             ["Checksum"] = $"'{checksum.Value}'",
             ["Path"] = "\"$toolsPath\"",
-        }.Select(x => $"-{x.Key} {x.Value}").Aggregate((acc, x) => $"{acc} {x}");
-        var installScriptContent = $"""
-        {init}
+        }.Select(x => $"  {x.Key} = {x.Value}").Aggregate((acc, x) => $"{acc}\n{x}");
+        var installScriptContent = $$"""
+        {{init}}
 
-        {command} {arguments}
+        $arguments = @{
+        {{arguments}}
+        }
+        {{command}} @arguments
 
         """;
         await Output.WriteAllTextAsync(paths: installScriptPath, contents: installScriptContent);
