@@ -68,7 +68,7 @@ jobs:
         env:
           ID: ${{ matrix.id }}
 
-      - run: choco install "$ID" --source=. -y
+      - run: choco install "$ID" --source=. -y --failonstderr
         env:
           ID: ${{ matrix.id }}
       - run: ${{ matrix.verify }}
