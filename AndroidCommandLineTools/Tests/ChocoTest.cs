@@ -44,7 +44,7 @@ public class ChocoTest
             actualString: installScript,
             StringComparison.InvariantCulture
         );
-        var nuspec = await File.ReadAllTextAsync(Path.Combine(dir.FullName, "AndroidCommandLineTools.nuspec"));
+        var nuspec = await File.ReadAllTextAsync(Path.Combine(dir.FullName, "android-commandlinetools.nuspec"));
         var versionElement = XDocument.Parse(nuspec)
             .Descendants()
             .Where(x => x.Name.LocalName == "version")
