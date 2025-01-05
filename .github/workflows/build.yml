@@ -17,7 +17,7 @@ jobs:
       - run: dotnet restore --locked-mode
       - run: dotnet format --no-restore --verify-no-changes
       - run: dotnet build --no-restore --configuration Release
-      - run: dotnet test --no-build
+      - run: dotnet test --no-restore
   setup:
     runs-on: ubuntu-latest
     outputs:
