@@ -112,6 +112,8 @@ internal class Choco
     private async Task GenerateWrapperScript(string command, Dictionary<string, string> arguments, params string[] paths)
     {
         var header = """
+        $ErrorActionPreference = 'Stop'
+
         $toolsPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
         . (Join-Path $toolsPath 'helpers.ps1')
         """;
