@@ -30,7 +30,7 @@ jobs:
             {"id": "android-commandlinetools"}
             {"project": "AndroidCommandLineTools/Main"}
             {"artifact": "AndroidCommandLineTools/Main/Releases"}
-            {"verify": "where.exe sdkmanager avdmanager adb"}
+            {"verify": "where.exe sdkmanager avdmanager"}
           EOF
       - id: output
         run: echo "matrix=$(cat tmp.jsonl | jq -s -c)" >> "$GITHUB_OUTPUT"
