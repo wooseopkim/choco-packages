@@ -68,9 +68,9 @@ jobs:
         env:
           ID: ${{ matrix.id }}
 
+      - run: echo $PATH
       - run: choco install "$ID" --source=. -y --failonstderr
         env:
           ID: ${{ matrix.id }}
-      - run: echo $PATH
-      - run: ls -R .
+      - run: ls -R /c/ProgramData/chocolatey/lib/android-commandlinetools
       - run: echo $PATH
