@@ -22,5 +22,11 @@ function Install-AndroidCommandLineTools {
   }
   Install-ChocolateyZipPackage @packageArgs
 
+  Get-ChildItem -Path "$Path" -File -Filter '*.bat' -Recurse | ForEach-Object {
+    $name = "$($_.Name)"
+    $path = "$($_.FullName)"
+    Install-BinFile -Name "$name" -Path "$path"
+  }
+
   Install-ChocolateyEnvironmentVariable -variableName 'ANDROID_HOME' -variableValue "$Path" -variableType 'Machine'
 }
