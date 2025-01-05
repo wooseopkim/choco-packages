@@ -49,6 +49,17 @@ public class ChocoTest
             actualString: installScript,
             StringComparison.InvariantCulture
         );
+        var uninstallScript = await File.ReadAllTextAsync(Path.Combine(dir.FullName, "tools", "chocolateyUninstall.ps1"));
+        Assert.Contains(
+            expectedSubstring: "helpers.ps1",
+            actualString: uninstallScript,
+            StringComparison.InvariantCulture
+        );
+        Assert.Contains(
+            expectedSubstring: "Path = \"$toolsPath\"",
+            actualString: uninstallScript,
+            StringComparison.InvariantCulture
+        );
         var nuspec = await File.ReadAllTextAsync(Path.Combine(dir.FullName, "android-commandlinetools.nuspec"));
         var versionElement = XDocument.Parse(nuspec)
             .Descendants()

@@ -1,3 +1,4 @@
+using System.Data;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -5,6 +6,8 @@ namespace AndroidCommandLineTools.Main;
 
 internal class Choco
 {
+
+    private const string ToolsDirectory = "tools";
 
     private readonly ReadOnlyProjectDirectory Input;
     private readonly WriteOnlyProjectDirectory Output;
@@ -66,33 +69,70 @@ internal class Choco
 
     private async Task GenerateTools(Uri uri, Checksum checksum)
     {
-        var toolsDirectory = "tools";
-
-        var src = Input.NewDirectoryInfo(toolsDirectory);
-        var dest = Output.NewDirectoryInfo(toolsDirectory);
+        var src = Input.NewDirectoryInfo(ToolsDirectory);
+        var dest = Output.NewDirectoryInfo(ToolsDirectory);
         src.CopyInto(dest);
 
-        var installScriptPath = Path.Join(toolsDirectory, "chocolateyInstall.ps1");
-        var init = """
-        $toolsPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
-        . (Join-Path $toolsPath 'helpers.ps1')
-        """;
+        await Task.WhenAll(
+            GenerateInstallScript(uri: uri, checksum: checksum),
+            GenerateUninstallScript()
+        );
+    }
+
+    private async Task GenerateInstallScript(Uri uri, Checksum checksum)
+    {
         var command = "Install-AndroidCommandLineTools";
         var arguments = new Dictionary<string, string>()
         {
             ["Url"] = $"'{uri.AbsoluteUri}'",
             ["Checksum"] = $"'{checksum.Value}'",
             ["Path"] = "\"$toolsPath\"",
-        }.Select(x => $"  {x.Key} = {x.Value}").Aggregate((acc, x) => $"{acc}\n{x}");
-        var installScriptContent = $$"""
-        {{init}}
+        };
+        await GenerateWrapperScript(
+            paths: "chocolateyInstall.ps1",
+            command: command,
+            arguments: arguments
+        );
+    }
 
+    private async Task GenerateUninstallScript()
+    {
+        var command = "Uninstall-AndroidCommandLineTools";
+        var arguments = new Dictionary<string, string>()
+        {
+            ["Path"] = "\"$toolsPath\"",
+        };
+        await GenerateWrapperScript(
+            paths: "chocolateyUninstall.ps1",
+            command: command,
+            arguments: arguments
+        );
+    }
+
+    private async Task GenerateWrapperScript(string command, Dictionary<string, string> arguments, params string[] paths)
+    {
+        var header = """
+        $toolsPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
+        . (Join-Path $toolsPath 'helpers.ps1')
+        """;
+
+        var body = $$"""
         $arguments = @{
-        {{arguments}}
+        {{arguments.Select(x => $"  {x.Key} = {x.Value}").Aggregate((acc, x) => $"{acc}\n{x}")}}
         }
         {{command}} @arguments
+        """;
+
+        var script = $"""
+        {header}
+
+        {body}
 
         """;
-        await Output.WriteAllTextAsync(paths: installScriptPath, contents: installScriptContent);
+
+        await Output.WriteAllTextAsync(
+            paths: [ToolsDirectory, .. paths],
+            contents: script
+        );
     }
 }
