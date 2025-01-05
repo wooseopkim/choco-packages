@@ -64,6 +64,7 @@ jobs:
         with:
           name: ${{ matrix.id }}
           path: ./artifact
+      - run: ls -R ./artifact
 
       - run: choco install "$ID" --source=./artifact -y
         env:
