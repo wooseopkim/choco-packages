@@ -72,3 +72,16 @@ jobs:
           .\.github\workflows\scripts\Test-ChocoCommand.ps1 -NotCallable -Commands $commands
         env:
           COMMAND_LIST: ${{ matrix.commands }}
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: [setup, check]
+    runs-on: windows-latest
+    strategy:
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.id }}
+      - run: choco push .\*.nupkg --apikey "$CHOCO_API_KEY" -y -failonstderr
+        env:
+          CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
