@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>[[PackageId]]</id>
+    <version>[[PackageVersion]]</version>
+    <owners>wooseopkim</owners>
+    <packageSourceUrl>https://github.com/wooseopkim/choco-packages</packageSourceUrl>
+
+    <title>Android Command Line Tools</title>
+    <authors>Google JetBrains</authors>
+    <iconUrl>https://developer.android.com/static/images/brand/android-head_flat.png</iconUrl>
+    <projectUrl>https://developer.android.com/studio#command-line-tools-only</projectUrl>
+    <docsUrl>https://developer.android.com/tools</docsUrl>
+    <projectSourceUrl>https://cs.android.com/android-studio/platform/tools/base</projectSourceUrl>
+    <licenseUrl>https://developer.android.com/studio/terms</licenseUrl>
+    <releaseNotes>https://developer.android.com/tools/releases/cmdline-tools</releaseNotes>
+
+    <tags>admin android android-sdk android-studio google</tags>
+    <summary>Android command-line tools without Android Studio</summary>
+    <description>
+This package is automatically being built with GitHub Actions.
+Please refer to package source to see how it's build.
+Please refer to the original software docs on how to use commands installed.
+    </description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

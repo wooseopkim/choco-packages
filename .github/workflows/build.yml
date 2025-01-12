@@ -6,86 +6,49 @@ on:
     branches:
       - main
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          global-json-file: ./global.json
-          cache: true
-          cache-dependency-path: '**/packages.lock.json'
-      - run: dotnet restore --locked-mode
-      - run: dotnet format --no-restore --verify-no-changes
-      - run: dotnet build --no-restore --configuration Release
-      - run: dotnet test --no-restore
   setup:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     outputs:
       matrix: ${{ steps.output.outputs.matrix }}
     steps:
-      - run: |
-          cat <<-EOF | jq add -s -c >> tmp.jsonl
-            {"id": "android-commandlinetools"}
-            {"project": "AndroidCommandLineTools/Main"}
-            {"artifact": "AndroidCommandLineTools/Main/Releases"}
-            {"verify-install": "where.exe sdkmanager && where.exe avdmanager"}
-            {"verify-uninstall": "where.exe sdkmanager && exit 1 || exit 0"}
-          EOF
       - id: output
-        run: echo "matrix=$(cat tmp.jsonl | jq -s -c)" >> "$GITHUB_OUTPUT"
-  generate:
-    needs: [setup, test]
-    runs-on: ubuntu-latest
+        run: |
+          $targets = (Import-PowerShellDataFile (Join-Path '.' 'Build.psd1')).Targets
+          .\.github\workflows\scripts\ConvertTo-Matrix.ps1 -Targets $targets >> $GITHUB_OUTPUT
+  build:
+    needs: [setup]
+    runs-on: windows-latest
     strategy:
-      matrix:
-        include: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    outputs:
+      uploaded: ${{ steps.upload.outputs.artifact-id == true }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./global.json
-          cache: true
-          cache-dependency-path: '**/packages.lock.json'
-      - run: dotnet run --project "$PROJECT"
-        env:
-          PROJECT: ${{ matrix.project }}
-      - uses: actions/upload-artifact@v4
+
+      - run: .\install.ps1
+      - run: .\load.ps1
+      - run: .\test.ps1
+      - run: .\build.ps1
+
+      - id: upload
+        uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.id }}-package
-          path: ${{ matrix.artifact }}
-  package:
-    needs: [setup, generate]
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        include: ${{ fromJson(needs.setup.outputs.matrix) }}
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: ${{ matrix.id }}-package
-      - run: choco pack "./$ID.nuspec"
-        env:
-          ID: ${{ matrix.id }}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.id }}-nupkg
-          path: ./*.nupkg
+          name: ${{ matrix.id }}
+          path: ./release/*.nupkg
   check:
-    needs: [setup, package]
+    needs: [setup, build]
+    if: needs.build.outputs.uploaded
     runs-on: windows-latest
     strategy:
-      matrix:
-        include: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.id }}-nupkg
+          name: ${{ matrix.id }}
 
       - uses: actions/cache@v4
         with:
@@ -95,9 +58,17 @@ jobs:
         env:
           ID: ${{ matrix.id }}
           CACHE: .choco-cache
-      - run: ${{ matrix.verify-install }}
+      - run: |
+          $commands = ConvertFrom-Json "$COMMAND_LIST"
+          .\.github\workflows\scripts\Test-ChocoCommand.ps1 -Commands $commands
+        env:
+          COMMAND_LIST: ${{ matrix.commands }}
 
       - run: choco uninstall "$ID" -y --failonstderr
         env:
           ID: ${{ matrix.id }}
-      - run: ${{ matrix.verify-uninstall }}
+      - run: |
+          $commands = ConvertFrom-Json "$COMMAND_LIST"
+          .\.github\workflows\scripts\Test-ChocoCommand.ps1 -NotCallable -Commands $commands
+        env:
+          COMMAND_LIST: ${{ matrix.commands }}

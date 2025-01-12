@@ -4,10 +4,8 @@
     "source.organizeImports": "always"
   },
   "editor.defaultFormatter": "EditorConfig.EditorConfig",
-  "[csharp]": {
-    "editor.defaultFormatter": "ms-dotnettools.csharp"
-  },
   "[powershell]": {
-    "editor.defaultFormatter": "ms-vscode.powershell"
-  }
+    "editor.defaultFormatter": "ms-vscode.powershell",
+  },
+  "powershell.scriptAnalysis.enable": true,
 }
