@@ -31,7 +31,11 @@ jobs:
         with:
           global-json-file: ./global.json
 
-      - run: .\install.ps1
+      - run: |
+          while ($count++ -Ne 3) {
+            try { .\install.ps1 }
+            catch { Start-Sleep (10 * $count) }
+          }
       - run: .\load.ps1
       - run: .\test.ps1
       - run: .\build.ps1 -Target "$env:ID"
