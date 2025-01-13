@@ -12,6 +12,7 @@ jobs:
     outputs:
       matrix: ${{ steps.output.outputs.matrix }}
     steps:
+      - uses: actions/checkout@v4
       - id: output
         run: |
           $targets = (Import-PowerShellDataFile (Join-Path '.' 'Build.psd1')).Targets
