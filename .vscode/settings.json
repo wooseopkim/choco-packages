@@ -1,11 +1,11 @@
 {
-  "editor.formatOnSave": true,
+  "[powershell]": {
+    "editor.defaultFormatter": "ms-vscode.powershell"
+  },
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "always"
+    "source": "always"
   },
   "editor.defaultFormatter": "EditorConfig.EditorConfig",
-  "[powershell]": {
-    "editor.defaultFormatter": "ms-vscode.powershell",
-  },
-  "powershell.scriptAnalysis.enable": true,
+  "editor.formatOnSave": true,
+  "powershell.scriptAnalysis.enable": true
 }
