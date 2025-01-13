@@ -87,6 +87,6 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.id }}
-      - run: choco push .\*.nupkg --apikey "$env:CHOCO_API_KEY" -y -failonstderr
+      - run: choco push .\*.nupkg --source "'https://push.chocolatey.org/'" --apikey "$env:CHOCO_API_KEY" -y -failonstderr
         env:
           CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
