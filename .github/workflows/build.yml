@@ -16,7 +16,8 @@ jobs:
       - id: output
         run: |
           $targets = (Import-PowerShellDataFile (Join-Path '.' 'Build.psd1')).Targets
-          .\.github\workflows\scripts\ConvertTo-Matrix.ps1 -Targets $targets >> $GITHUB_OUTPUT
+          $matrix = .\.github\workflows\scripts\ConvertTo-Matrix.ps1 -Targets $targets
+          Write-Output "matrix=$matrix" >> $GITHUB_OUTPUT
   build:
     needs: [setup]
     runs-on: windows-latest
