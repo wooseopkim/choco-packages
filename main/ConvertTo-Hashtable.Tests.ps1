@@ -15,9 +15,6 @@ Describe 'ConvertTo-Hashtable' {
     ) {
         $actual = ConvertTo-Hashtable -Value $value
 
-        $actual.Keys | Should -HaveCount $expected.Keys.Count
-        foreach ($key in $actual.Keys) {
-            $actual.$key | Should -Be $expected.$key
-        }
+        Compare-Value -Actual $actual -Expected $expected
     }
 }

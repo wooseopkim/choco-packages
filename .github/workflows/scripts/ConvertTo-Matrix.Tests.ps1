@@ -3,7 +3,7 @@ BeforeAll {
 }
 
 Describe 'ConvertTo-Matrix' {
-    It 'converts into GitHub Workflow matrix' {
+    It 'converts into a GitHub Workflow matrix' {
         [Hashtable[]]$targets = @(
             @{
                 Id       = 'something'
@@ -17,6 +17,8 @@ Describe 'ConvertTo-Matrix' {
 
         $matrix = Invoke-Script -Targets $targets
 
-        $matrix | Should -Be '{"include":[{"commands":["a","b","c","d"],"id":"something"},{"commands":["e","f","g","h"],"id":"another"}]}'
+        $actual = ConvertFrom-Json -AsHashtable -InputObject $matrix
+        $expected = ConvertFrom-Json -AsHashtable -InputObject '{"include":[{"id":"something","commands":["a","b","c","d"]},{"id":"another","commands":["e","f","g","h"]}]}'
+        Compare-Value -Actual $actual -Expected $expected
     }
 }
