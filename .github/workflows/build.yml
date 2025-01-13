@@ -42,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.id }}
-          path: ./release/*.nupkg
+          path: ./main/release/${{ matrix.id }}*.nupkg
   check:
     needs: [setup, build]
     if: needs.build.outputs.uploaded
