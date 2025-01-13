@@ -17,7 +17,7 @@ jobs:
         run: |
           $targets = (Import-PowerShellDataFile (Join-Path '.' 'Build.psd1')).Targets
           $matrix = .\.github\workflows\scripts\ConvertTo-Matrix.ps1 -Targets $targets
-          Write-Output "matrix=$matrix" >> $GITHUB_OUTPUT
+          Write-Output "matrix=$matrix" >> $env:GITHUB_OUTPUT
   build:
     needs: [setup]
     runs-on: windows-latest
@@ -56,21 +56,21 @@ jobs:
         with:
           path: .choco-cache
           key: ${{ matrix.id }}-choco-${{ hashFiles('./*.nupkg') }}
-      - run: choco install "$ID" --source=. -y --failonstderr --cache="$CACHE"
+      - run: choco install "$env:ID" --source=. -y --failonstderr --cache="$env:CACHE"
         env:
           ID: ${{ matrix.id }}
           CACHE: .choco-cache
       - run: |
-          $commands = ConvertFrom-Json "$COMMAND_LIST"
+          $commands = ConvertFrom-Json "$env:COMMAND_LIST"
           .\.github\workflows\scripts\Test-ChocoCommand.ps1 -Commands $commands
         env:
           COMMAND_LIST: ${{ matrix.commands }}
 
-      - run: choco uninstall "$ID" -y --failonstderr
+      - run: choco uninstall "$env:ID" -y --failonstderr
         env:
           ID: ${{ matrix.id }}
       - run: |
-          $commands = ConvertFrom-Json "$COMMAND_LIST"
+          $commands = ConvertFrom-Json "$env:COMMAND_LIST"
           .\.github\workflows\scripts\Test-ChocoCommand.ps1 -NotCallable -Commands $commands
         env:
           COMMAND_LIST: ${{ matrix.commands }}
@@ -84,6 +84,6 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.id }}
-      - run: choco push .\*.nupkg --apikey "$CHOCO_API_KEY" -y -failonstderr
+      - run: choco push .\*.nupkg --apikey "$env:CHOCO_API_KEY" -y -failonstderr
         env:
           CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
