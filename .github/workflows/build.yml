@@ -103,14 +103,9 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.id }}
-      - id: locate
-        run: |
-          $path = "$((Get-ChildItem -Path '*.nupkg')[0].FullName)"
-          Write-Output "path=$path" >> $env:GITHUB_OUTPUT
       - name: Publish to GitHub Packages
         run: |
-          choco push "$env:NUPKG_PATH" --source "'https://nuget.pkg.github.com/$env:NAMESPACE/'" --apikey "$env:API_KEY" -y -failonstderr
+          choco push --source "'https://nuget.pkg.github.com/$env:NAMESPACE/'" --apikey "$env:API_KEY" -y -failonstderr
         env:
           API_KEY: ${{ secrets.GITHUB_TOKEN }}
-          NUPKG_PATH: ${{ steps.locate.outputs.path }}
           NAMESPACE: ${{ github.repository_owner }}
