@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     outputs:
-      uploaded: ${{ steps.upload.outputs.artifact-id != null }}
+      uploaded: ${{ steps.upload.outputs.artifact-id }}
     permissions:
       contents: read
       packages: read
