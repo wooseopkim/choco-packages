@@ -2,8 +2,10 @@ BeforeAll {
     . ($PSCommandPath -Replace '\.Tests\.ps1$', '.ps1')
 }
 
+$sources = (choco source -r | Measure-Object -Line).Lines
+
 Describe 'Get-PackageVersion' {
-    Context 'With actual responses' {
+    Context 'With actual responses' -Skip:($sources -Gt 2) {
         It 'returns empty version with a non-existent package' {
             Get-PackageVersion -Id thispackagedoesnotexist | Should -Be $null
         }
