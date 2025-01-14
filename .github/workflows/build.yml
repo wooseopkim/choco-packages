@@ -27,11 +27,21 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     outputs:
       uploaded: ${{ steps.upload.outputs.artifact-id == true }}
+    permissions:
+      contents: read
+      packages: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./global.json
+      - name: Add GitHub Packages as the default source
+        run: |
+          $source = "https://nuget.pkg.github.com/$env:NAMESPACE/"
+          choco source add --source "$source" --user "$env:NAMESPACE" --password "$env:API_KEY" --priority 1 -y -failonstderr
+        env:
+          API_KEY: ${{ secrets.GITHUB_TOKEN }}
+          NAMESPACE: ${{ github.repository_owner }}
 
       - run: |
           while ($count++ -Ne 3) {
