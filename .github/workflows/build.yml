@@ -105,8 +105,8 @@ jobs:
           Write-Output "path=$path" >> $env:GITHUB_OUTPUT
       - name: Publish to GitHub Packages
         run: |
-          choco push "$env:PATH" --source "'https://nuget.pkg.github.com/$env:NAMESPACE/'" --apikey "$env:API_KEY" -y -failonstderr
+          choco push "$env:NUPKG_PATH" --source "'https://nuget.pkg.github.com/$env:NAMESPACE/'" --apikey "$env:API_KEY" -y -failonstderr
         env:
           API_KEY: ${{ secrets.GITHUB_TOKEN }}
-          PATH: ${{ steps.locate.outputs.path }}
+          NUPKG_PATH: ${{ steps.locate.outputs.path }}
           NAMESPACE: ${{ github.repository_owner }}
