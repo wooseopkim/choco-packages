@@ -37,7 +37,7 @@ jobs:
           global-json-file: ./global.json
       - name: Add GitHub Packages as the default source
         run: |
-          $source = "https://nuget.pkg.github.com/$env:NAMESPACE/"
+          $source = "https://nuget.pkg.github.com/$env:NAMESPACE/index.json"
           choco source add `
             --name 'github' `
             --source "$source" `
@@ -122,7 +122,7 @@ jobs:
           name: ${{ matrix.id }}
       - name: Publish to GitHub Packages
         run: |
-          choco push --source "'https://nuget.pkg.github.com/$env:NAMESPACE/'" --apikey "$env:API_KEY" -y -failonstderr
+          choco push --source "'https://nuget.pkg.github.com/$env:NAMESPACE/index.json'" --apikey "$env:API_KEY" -y -failonstderr
         env:
           API_KEY: ${{ secrets.GITHUB_TOKEN }}
           NAMESPACE: ${{ github.repository_owner }}
