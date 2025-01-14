@@ -5,7 +5,7 @@ BeforeAll {
 $sources = (choco source -r | Measure-Object -Line).Lines
 
 Describe 'Get-PackageVersion' {
-    Context 'With actual responses' -Skip:($sources -Gt 2) {
+    Context 'With actual responses' -Skip:($sources -Gt 1) {
         It 'returns empty version with a non-existent package' {
             Get-PackageVersion -Id thispackagedoesnotexist | Should -Be $null
         }
