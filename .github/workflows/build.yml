@@ -59,14 +59,22 @@ jobs:
         with:
           name: ${{ matrix.id }}
 
+      - id: prepare
+        run: |
+          $fileName = (Get-ChildItem -Path '*.nupkg')[0].Name
+          $cacheKey = "$env:ID-choco-$fileName"
+          Write-Output "cache-key=$cacheKey" >> $env:GITHUB_OUTPUT
+          Write-Output 'cache-path=.choco-cache' >> $env:GITHUB_OUTPUT
+        env:
+          ID: ${{ matrix.id }}
       - uses: actions/cache@v4
         with:
-          path: .choco-cache
-          key: ${{ matrix.id }}-choco-${{ hashFiles('./*.nupkg') }}
+          path: ${{ steps.prepare.outputs.cache-path }}
+          key: ${{ steps.prepare.outputs.cache-key }}
       - run: choco install "$env:ID" --source=. -y --failonstderr --cache="$env:CACHE"
         env:
           ID: ${{ matrix.id }}
-          CACHE: .choco-cache
+          CACHE: ${{ steps.prepare.outputs.cache-path }}
       - run: |
           $commands = ConvertFrom-Json "$env:COMMAND_LIST"
           .\.github\workflows\scripts\Test-ChocoCommand.ps1 -Commands $commands
