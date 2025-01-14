@@ -68,7 +68,7 @@ jobs:
           path: ./main/release/${{ matrix.id }}*.nupkg
   check:
     needs: [setup, build]
-    if: needs.build.outputs.uploaded
+    if: needs.build.outputs.uploaded == 'true'
     runs-on: windows-latest
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
