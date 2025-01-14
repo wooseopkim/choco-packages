@@ -38,7 +38,14 @@ jobs:
       - name: Add GitHub Packages as the default source
         run: |
           $source = "https://nuget.pkg.github.com/$env:NAMESPACE/"
-          choco source add --source "$source" --user "$env:NAMESPACE" --password "$env:API_KEY" --priority 1 -y -failonstderr
+          choco source add `
+            --name 'github' `
+            --source "$source" `
+            --user "$env:NAMESPACE" `
+            --password "$env:API_KEY" `
+            --priority 1 `
+            -failonstderr `
+            -y
         env:
           API_KEY: ${{ secrets.GITHUB_TOKEN }}
           NAMESPACE: ${{ github.repository_owner }}
